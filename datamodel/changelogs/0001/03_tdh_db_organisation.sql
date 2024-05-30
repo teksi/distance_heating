@@ -100,8 +100,8 @@ ALTER TABLE tdh_vl.organisation_status ADD CONSTRAINT pkey_tdh_vl_organisation_s
 
  --------- Relations to class organisation for dataowner and provider (new 3.11.2014);
 
-ALTER TABLE tdh_od.organisation ADD CONSTRAINT rel_od_organisation_fk_dataowner FOREIGN KEY (fk_dataowner) REFERENCES tdh_od.organisation(obj_id) DEFERRABLE;
-ALTER TABLE tdh_od.organisation ADD CONSTRAINT rel_od_organisation_fk_dataprovider FOREIGN KEY (fk_provider) REFERENCES tdh_od.organisation(obj_id) DEFERRABLE;
+ALTER TABLE tdh_od.organisation ADD CONSTRAINT rel_od_organisation_fk_dataowner FOREIGN KEY (fk_dataowner) REFERENCES tdh_od.organisation(obj_id) DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE tdh_od.organisation ADD CONSTRAINT rel_od_organisation_fk_dataprovider FOREIGN KEY (fk_provider) REFERENCES tdh_od.organisation(obj_id) DEFERRABLE INITIALLY DEFERRED;
 
 ----- Indexes on identifiers
 

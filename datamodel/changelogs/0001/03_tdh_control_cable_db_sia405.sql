@@ -1,7 +1,7 @@
 ------ This file generates the postgres database (Modul fernwirkkabel (based on SIA405_FERNWIRKKABEL_3D_2015_LV95 (Version 18.04.2018) in en for QQIS
 ------ Rename classes for integration in specific TEKSI module based on this convention: https://github.com/orgs/teksi/discussions/100#discussioncomment-9058690
 ------ For questions etc. please contact Stefan Burckhardt stefan.burckhardt@sjib.ch
------- version 25.05.2024 22:31:03
+------ version 30.05.2024 19:47:23
 ------ with 3D coordinates
 BEGIN;
 
@@ -76,19 +76,19 @@ FOR EACH ROW EXECUTE PROCEDURE
 CREATE TABLE tdh_od.sia405cc_cable
 (
    obj_id varchar(16) NOT NULL,
-   CONSTRAINT pkey_tdh_od_cable_obj_id PRIMARY KEY (obj_id)
+   CONSTRAINT pkey_tdh_od_sia405cc_cable_obj_id PRIMARY KEY (obj_id)
 )
 WITH (
    OIDS = False
 );
-CREATE SEQUENCE tdh_od.seq_cable_oid INCREMENT 1 MINVALUE 0 MAXVALUE 999999 START 0;
+CREATE SEQUENCE tdh_od.seq_sia405cc_cable_oid INCREMENT 1 MINVALUE 0 MAXVALUE 999999 START 0;
  ALTER TABLE tdh_od.sia405cc_cable ALTER COLUMN obj_id SET DEFAULT tdh_sys.generate_oid('tdh_od','sia405cc_cable');
 COMMENT ON COLUMN tdh_od.sia405cc_cable.obj_id IS 'INTERLIS STANDARD OID (with Postfix/Präfix), see www.interlis.ch';
  ALTER TABLE tdh_od.sia405cc_cable ADD COLUMN name_number text;
  ALTER TABLE tdh_od.sia405cc_cable ADD CONSTRAINT _name_number_length_max_40 CHECK(char_length(name_number)<=40);
 COMMENT ON COLUMN tdh_od.sia405cc_cable.name_number IS ' / z.B. Kabelpunktanfang_Kabelpunkteende / xxx_z.B. Point_cableanfang_Point_cableeende';
 -- ALTER TABLE tdh_od.sia405cc_cable ADD COLUMN geometry_geometry geometry('COMPOUNDCURVE', :SRID);
--- CREATE INDEX in_tdh_cable_geometry_geometry ON tdh_od.sia405cc_cable USING gist (geometry_geometry );
+-- CREATE INDEX in_tdh_sia405cc_cable_geometry_geometry ON tdh_od.sia405cc_cable USING gist (geometry_geometry );
 -- COMMENT ON COLUMN tdh_od.sia405cc_cable.geometry_geometry IS '';
  ALTER TABLE tdh_od.sia405cc_cable ADD COLUMN function  integer ;
 COMMENT ON COLUMN tdh_od.sia405cc_cable.function IS '';
@@ -111,7 +111,7 @@ COMMENT ON COLUMN tdh_od.sia405cc_cable.remark IS '';
  ALTER TABLE tdh_od.sia405cc_cable ADD COLUMN width  smallint ;
 COMMENT ON COLUMN tdh_od.sia405cc_cable.width IS '';
 ALTER TABLE tdh_od.sia405cc_cable ADD COLUMN geometry3d_geometry geometry('COMPOUNDCURVEZ', :SRID);
-CREATE INDEX in_tdh_cable_geometry3d_geometry ON tdh_od.sia405cc_cable USING gist (geometry3d_geometry );
+CREATE INDEX in_tdh_sia405cc_cable_geometry3d_geometry ON tdh_od.sia405cc_cable USING gist (geometry3d_geometry );
 COMMENT ON COLUMN tdh_od.sia405cc_cable.geometry3d_geometry IS '';
  ALTER TABLE tdh_od.sia405cc_cable ADD COLUMN elevation_determination  integer ;
 COMMENT ON COLUMN tdh_od.sia405cc_cable.elevation_determination IS '';
@@ -125,7 +125,7 @@ COMMENT ON COLUMN tdh_od.sia405cc_cable.fk_dataowner IS 'Foreignkey to Metaattri
 COMMENT ON COLUMN tdh_od.sia405cc_cable.fk_provider IS 'Foreignkey to Metaattribute provider (as an organisation) - this is the person or body who delivered the data / Metaattribut Datenlieferant ist diejenige Person oder Stelle, die die Daten geliefert hat / FOURNISSEUR DES DONNEES Organisation qui crée l’enregistrement de ces données ';
 -------
 CREATE TRIGGER
-update_last_modified_cable
+update_last_modified_sia405cc_cable
 BEFORE UPDATE OR INSERT ON
  tdh_od.sia405cc_cable
 FOR EACH ROW EXECUTE PROCEDURE
@@ -178,34 +178,34 @@ ALTER TABLE tdh_vl.sia405cc_cable_point_status ADD CONSTRAINT pkey_tdh_vl_sia405
 ALTER TABLE tdh_od.sia405cc_cable ADD COLUMN fk_owner varchar(16);
 ALTER TABLE tdh_od.sia405cc_cable ADD CONSTRAINT rel_cable_owner FOREIGN KEY (fk_owner) REFERENCES tdh_od.organisation(obj_id) ON UPDATE CASCADE ON DELETE set null DEFERRABLE INITIALLY DEFERRED;
 CREATE TABLE tdh_vl.sia405cc_cable_function () INHERITS (tdh_vl.value_list_base);
-ALTER TABLE tdh_vl.sia405cc_cable_function ADD CONSTRAINT pkey_tdh_vl_cable_function_code PRIMARY KEY (code);
+ALTER TABLE tdh_vl.sia405cc_cable_function ADD CONSTRAINT pkey_tdh_vl_sia405cc_cable_function_code PRIMARY KEY (code);
  INSERT INTO tdh_vl.sia405cc_cable_function (code, vsacode, value_en, value_de, value_fr, value_it, value_ro, abbr_en, abbr_de, abbr_fr, abbr_it, abbr_ro, active) VALUES (9339,9339,'signal_cable','Signalkabel','cable_de_signal', 'cavo_di_segnale', 'cablu_de_semnal', '', '', '', '', '', 'true');
  INSERT INTO tdh_vl.sia405cc_cable_function (code, vsacode, value_en, value_de, value_fr, value_it, value_ro, abbr_en, abbr_de, abbr_fr, abbr_it, abbr_ro, active) VALUES (9340,9340,'control_cable','Steuerkabel','cable_de_conduite', 'cavo_di_comando', 'cablu_de_control', '', '', '', '', '', 'true');
  INSERT INTO tdh_vl.sia405cc_cable_function (code, vsacode, value_en, value_de, value_fr, value_it, value_ro, abbr_en, abbr_de, abbr_fr, abbr_it, abbr_ro, active) VALUES (9341,9341,'power_cable','Stromkabel','cable_de_courant', 'cavo_di_alimentazione', 'cablu_de_alimentare', '', '', '', '', '', 'true');
  INSERT INTO tdh_vl.sia405cc_cable_function (code, vsacode, value_en, value_de, value_fr, value_it, value_ro, abbr_en, abbr_de, abbr_fr, abbr_it, abbr_ro, active) VALUES (9338,9338,'unknown','unbekannt','inconnue', 'sconosciuto', 'necunoscuta', '', '', '', '', '', 'true');
  INSERT INTO tdh_vl.sia405cc_cable_function (code, vsacode, value_en, value_de, value_fr, value_it, value_ro, abbr_en, abbr_de, abbr_fr, abbr_it, abbr_ro, active) VALUES (9342,9342,'others','weitere','autres', 'zzz_weitere', 'rrr_weitere', '', '', '', '', '', 'true');
- ALTER TABLE tdh_od.sia405cc_cable ADD CONSTRAINT fkey_vl_cable_function FOREIGN KEY (function)
+ ALTER TABLE tdh_od.sia405cc_cable ADD CONSTRAINT fkey_vl_sia405cc_cable_function FOREIGN KEY (function)
  REFERENCES tdh_vl.sia405cc_cable_function (code) MATCH SIMPLE
  ON UPDATE RESTRICT ON DELETE RESTRICT;
 CREATE TABLE tdh_vl.sia405cc_cable_cable_type () INHERITS (tdh_vl.value_list_base);
-ALTER TABLE tdh_vl.sia405cc_cable_cable_type ADD CONSTRAINT pkey_tdh_vl_cable_cable_type_code PRIMARY KEY (code);
+ALTER TABLE tdh_vl.sia405cc_cable_cable_type ADD CONSTRAINT pkey_tdh_vl_sia405cc_cable_cable_type_code PRIMARY KEY (code);
  INSERT INTO tdh_vl.sia405cc_cable_cable_type (code, vsacode, value_en, value_de, value_fr, value_it, value_ro, abbr_en, abbr_de, abbr_fr, abbr_it, abbr_ro, active) VALUES (9345,9345,'coaxial','koaxial','coaxial', 'zzz_coassiale', 'rrr_koaxial', '', '', '', '', '', 'true');
  INSERT INTO tdh_vl.sia405cc_cable_cable_type (code, vsacode, value_en, value_de, value_fr, value_it, value_ro, abbr_en, abbr_de, abbr_fr, abbr_it, abbr_ro, active) VALUES (9344,9344,'copper','Kupfer','cuivre', 'zzz_rame', 'zzz_Kupfer', '', '', '', '', '', 'true');
  INSERT INTO tdh_vl.sia405cc_cable_cable_type (code, vsacode, value_en, value_de, value_fr, value_it, value_ro, abbr_en, abbr_de, abbr_fr, abbr_it, abbr_ro, active) VALUES (9346,9346,'fiber_optic','Lichtwellenleiter','optique', 'zzz_Lichtwellenleiter', 'rrr_Lichtwellenleiter', '', '', '', '', '', 'true');
  INSERT INTO tdh_vl.sia405cc_cable_cable_type (code, vsacode, value_en, value_de, value_fr, value_it, value_ro, abbr_en, abbr_de, abbr_fr, abbr_it, abbr_ro, active) VALUES (9343,9343,'unknown','unbekannt','inconnue', 'sconosciuto', 'necunoscuta', '', '', '', '', '', 'true');
- ALTER TABLE tdh_od.sia405cc_cable ADD CONSTRAINT fkey_vl_cable_cable_type FOREIGN KEY (cable_type)
+ ALTER TABLE tdh_od.sia405cc_cable ADD CONSTRAINT fkey_vl_sia405cc_cable_cable_type FOREIGN KEY (cable_type)
  REFERENCES tdh_vl.sia405cc_cable_cable_type (code) MATCH SIMPLE
  ON UPDATE RESTRICT ON DELETE RESTRICT;
 CREATE TABLE tdh_vl.sia405cc_cable_horizontal_positioning () INHERITS (tdh_vl.value_list_base);
-ALTER TABLE tdh_vl.sia405cc_cable_horizontal_positioning ADD CONSTRAINT pkey_tdh_vl_cable_horizontal_positioning_code PRIMARY KEY (code);
+ALTER TABLE tdh_vl.sia405cc_cable_horizontal_positioning ADD CONSTRAINT pkey_tdh_vl_sia405cc_cable_horizontal_positioning_code PRIMARY KEY (code);
  INSERT INTO tdh_vl.sia405cc_cable_horizontal_positioning (code, vsacode, value_en, value_de, value_fr, value_it, value_ro, abbr_en, abbr_de, abbr_fr, abbr_it, abbr_ro, active) VALUES (9347,9347,'accurate','genau','precis', 'precisa', 'precisa', '', '', '', '', '', 'true');
  INSERT INTO tdh_vl.sia405cc_cable_horizontal_positioning (code, vsacode, value_en, value_de, value_fr, value_it, value_ro, abbr_en, abbr_de, abbr_fr, abbr_it, abbr_ro, active) VALUES (9348,9348,'unknown','unbekannt','inconnue', 'sconosciuto', 'necunoscuta', '', '', '', '', '', 'true');
  INSERT INTO tdh_vl.sia405cc_cable_horizontal_positioning (code, vsacode, value_en, value_de, value_fr, value_it, value_ro, abbr_en, abbr_de, abbr_fr, abbr_it, abbr_ro, active) VALUES (9349,9349,'inaccurate','ungenau','imprecis', 'impreciso', 'imprecisa', '', '', '', '', '', 'true');
- ALTER TABLE tdh_od.sia405cc_cable ADD CONSTRAINT fkey_vl_cable_horizontal_positioning FOREIGN KEY (horizontal_positioning)
+ ALTER TABLE tdh_od.sia405cc_cable ADD CONSTRAINT fkey_vl_sia405cc_cable_horizontal_positioning FOREIGN KEY (horizontal_positioning)
  REFERENCES tdh_vl.sia405cc_cable_horizontal_positioning (code) MATCH SIMPLE
  ON UPDATE RESTRICT ON DELETE RESTRICT;
 CREATE TABLE tdh_vl.sia405cc_cable_status () INHERITS (tdh_vl.value_list_base);
-ALTER TABLE tdh_vl.sia405cc_cable_status ADD CONSTRAINT pkey_tdh_vl_cable_status_code PRIMARY KEY (code);
+ALTER TABLE tdh_vl.sia405cc_cable_status ADD CONSTRAINT pkey_tdh_vl_sia405cc_cable_status_code PRIMARY KEY (code);
  INSERT INTO tdh_vl.sia405cc_cable_status (code, vsacode, value_en, value_de, value_fr, value_it, value_ro, abbr_en, abbr_de, abbr_fr, abbr_it, abbr_ro, active) VALUES (9363,9363,'inoperative','ausser_Betrieb','hors_service', 'fuori_servizio', 'rrr_ausser_Betrieb', '', '', '', '', '', 'true');
  INSERT INTO tdh_vl.sia405cc_cable_status (code, vsacode, value_en, value_de, value_fr, value_it, value_ro, abbr_en, abbr_de, abbr_fr, abbr_it, abbr_ro, active) VALUES (9364,9364,'inoperative.reserve','ausser_Betrieb.Reserve','hors_service.en_reserve', 'fuori_servizio.riserva', 'rrr_ausser_Betrieb.Reserve', '', '', '', '', '', 'true');
  INSERT INTO tdh_vl.sia405cc_cable_status (code, vsacode, value_en, value_de, value_fr, value_it, value_ro, abbr_en, abbr_de, abbr_fr, abbr_it, abbr_ro, active) VALUES (9365,9365,'operational','in_Betrieb','en_service', 'in_funzione', 'functionala', '', '', '', '', '', 'true');
@@ -214,23 +214,23 @@ ALTER TABLE tdh_vl.sia405cc_cable_status ADD CONSTRAINT pkey_tdh_vl_cable_status
  INSERT INTO tdh_vl.sia405cc_cable_status (code, vsacode, value_en, value_de, value_fr, value_it, value_ro, abbr_en, abbr_de, abbr_fr, abbr_it, abbr_ro, active) VALUES (9368,9368,'other.calculation_alternative','weitere.Berechnungsvariante','autre.variante_de_calcule', 'altro.variante_calcolo', 'alta.varianta_calcul', '', '', '', '', '', 'true');
  INSERT INTO tdh_vl.sia405cc_cable_status (code, vsacode, value_en, value_de, value_fr, value_it, value_ro, abbr_en, abbr_de, abbr_fr, abbr_it, abbr_ro, active) VALUES (9369,9369,'other.planned','weitere.geplant','autre.planifie', 'altro.previsto', 'rrr_weitere.geplant', '', '', '', '', '', 'true');
  INSERT INTO tdh_vl.sia405cc_cable_status (code, vsacode, value_en, value_de, value_fr, value_it, value_ro, abbr_en, abbr_de, abbr_fr, abbr_it, abbr_ro, active) VALUES (9370,9370,'other.project','weitere.Projekt','autre.projet', 'altro.progetto', 'alta.proiect', '', '', '', '', '', 'true');
- ALTER TABLE tdh_od.sia405cc_cable ADD CONSTRAINT fkey_vl_cable_status FOREIGN KEY (status)
+ ALTER TABLE tdh_od.sia405cc_cable ADD CONSTRAINT fkey_vl_sia405cc_cable_status FOREIGN KEY (status)
  REFERENCES tdh_vl.sia405cc_cable_status (code) MATCH SIMPLE
  ON UPDATE RESTRICT ON DELETE RESTRICT;
 CREATE TABLE tdh_vl.sia405cc_cable_elevation_determination () INHERITS (tdh_vl.value_list_base);
-ALTER TABLE tdh_vl.sia405cc_cable_elevation_determination ADD CONSTRAINT pkey_tdh_vl_cable_elevation_determination_code PRIMARY KEY (code);
+ALTER TABLE tdh_vl.sia405cc_cable_elevation_determination ADD CONSTRAINT pkey_tdh_vl_sia405cc_cable_elevation_determination_code PRIMARY KEY (code);
  INSERT INTO tdh_vl.sia405cc_cable_elevation_determination (code, vsacode, value_en, value_de, value_fr, value_it, value_ro, abbr_en, abbr_de, abbr_fr, abbr_it, abbr_ro, active) VALUES (9359,9359,'accurate','genau','precis', 'precisa', 'precisa', '', '', '', '', '', 'true');
  INSERT INTO tdh_vl.sia405cc_cable_elevation_determination (code, vsacode, value_en, value_de, value_fr, value_it, value_ro, abbr_en, abbr_de, abbr_fr, abbr_it, abbr_ro, active) VALUES (9360,9360,'unknown','unbekannt','inconnue', 'sconosciuto', 'necunoscuta', '', '', '', '', '', 'true');
  INSERT INTO tdh_vl.sia405cc_cable_elevation_determination (code, vsacode, value_en, value_de, value_fr, value_it, value_ro, abbr_en, abbr_de, abbr_fr, abbr_it, abbr_ro, active) VALUES (9361,9361,'inaccurate','ungenau','imprecis', 'impreciso', 'imprecisa', '', '', '', '', '', 'true');
- ALTER TABLE tdh_od.sia405cc_cable ADD CONSTRAINT fkey_vl_cable_elevation_determination FOREIGN KEY (elevation_determination)
+ ALTER TABLE tdh_od.sia405cc_cable ADD CONSTRAINT fkey_vl_sia405cc_cable_elevation_determination FOREIGN KEY (elevation_determination)
  REFERENCES tdh_vl.sia405cc_cable_elevation_determination (code) MATCH SIMPLE
  ON UPDATE RESTRICT ON DELETE RESTRICT;
 --------- Relations to class organisation for dataowner and provider (new 3.11.2014);
 
-ALTER TABLE tdh_od.sia405cc_cable_point ADD CONSTRAINT rel_od_sia405cc_cable_point_fk_dataowner FOREIGN KEY (fk_dataowner) REFERENCES tdh_od.organisation(obj_id);
-ALTER TABLE tdh_od.sia405cc_cable_point ADD CONSTRAINT rel_od_sia405cc_cable_point_fk_dataprovider FOREIGN KEY (fk_provider) REFERENCES tdh_od.organisation(obj_id);
-ALTER TABLE tdh_od.sia405cc_cable ADD CONSTRAINT rel_od_cable_fk_dataowner FOREIGN KEY (fk_dataowner) REFERENCES tdh_od.organisation(obj_id);
-ALTER TABLE tdh_od.sia405cc_cable ADD CONSTRAINT rel_od_cable_fk_dataprovider FOREIGN KEY (fk_provider) REFERENCES tdh_od.organisation(obj_id);
+ALTER TABLE tdh_od.sia405cc_cable_point ADD CONSTRAINT rel_od_sia405cc_cable_point_fk_dataowner FOREIGN KEY (fk_dataowner) REFERENCES tdh_od.organisation(obj_id)  DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE tdh_od.sia405cc_cable_point ADD CONSTRAINT rel_od_sia405cc_cable_point_fk_dataprovider FOREIGN KEY (fk_provider) REFERENCES tdh_od.organisation(obj_id)  DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE tdh_od.sia405cc_cable ADD CONSTRAINT rel_od_sia405cc_cable_fk_dataowner FOREIGN KEY (fk_dataowner) REFERENCES tdh_od.organisation(obj_id)  DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE tdh_od.sia405cc_cable ADD CONSTRAINT rel_od_sia405cc_cable_fk_dataprovider FOREIGN KEY (fk_provider) REFERENCES tdh_od.organisation(obj_id)  DEFERRABLE INITIALLY DEFERRED;
 
 ------ Indexes on identifiers
 
